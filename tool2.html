@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Makandaar.com — WhatsApp Lead Qualifier Generator</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #08080E; color: #E8E8F0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  min-height: 100vh; font-size: 14px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+input:focus, textarea:focus, select:focus {
+  border-color: #C01818 !important; outline: none;
+  box-shadow: 0 0 0 3px rgba(192,24,24,0.12);
+}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background: #252538; border-radius: 3px; }
+a { color: inherit; text-decoration: none; }
+
+.header {
+  background: linear-gradient(135deg,#0D0D18,#12080A);
+  border-bottom: 2px solid #25D366; padding: 18px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+}
+.logo-wrap { display:flex; align-items:center; gap:14px; }
+.logo-box {
+  width:46px; height:46px; background:#25D366; border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px; font-weight:900; color:#063318;
+}
+.brand { font-size:18px; font-weight:800; color:#fff; letter-spacing:-0.5px; }
+.subbrand { font-size:11px; color:#888; letter-spacing:1.5px; text-transform:uppercase; margin-top:2px; }
+.hdr-right { font-size:11px; color:#666; text-align:right; line-height:1.7; }
+
+.tool-badge {
+  background: #0A0A14; border-bottom: 1px solid #1A1A28;
+  padding: 14px 24px; text-align: center;
+}
+.tool-badge-text { font-size: 12px; color: #888; }
+.tool-badge-text strong { color: #25D366; }
+
+.api-banner {
+  background: #06140C; border-bottom: 1px solid #0F3320;
+  padding: 14px 24px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+}
+.api-banner.saved { background:#060A06; border-bottom-color:#0C3010; }
+.api-label { font-size:11px; color:#888; font-weight:700; letter-spacing:1px; text-transform:uppercase; white-space:nowrap; }
+.api-input-wrap { flex:1; display:flex; gap:8px; min-width:220px; }
+.api-input {
+  flex:1; background:#0E1A12; border:1px solid #14401F; border-radius:7px;
+  padding:9px 12px; color:#70D090; font-size:13px; font-family:monospace;
+}
+.api-input.saved-style { border-color:#0C5020; color:#40C080; background:#060E06; }
+.api-save-btn {
+  padding:9px 18px; background:#15803D; border:none; border-radius:7px;
+  color:#fff; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap;
+  transition:background 0.2s;
+}
+.api-save-btn:hover { background:#1A9D4A; }
+.api-save-btn.saved-btn { background:#0A5020; }
+.api-status { font-size:11px; color:#40C080; display:none; }
+.api-link { font-size:11px; color:#666; white-space:nowrap; }
+.api-link a { color:#3DBE6C; text-decoration:underline; }
+
+.main { max-width:900px; margin:0 auto; padding:28px 18px 80px; }
+
+.card {
+  background:#0E0E1A; border:1px solid #1E1E2E;
+  border-radius:14px; padding:24px; margin-bottom:20px;
+}
+.card-title {
+  font-size:11px; font-weight:700; letter-spacing:2.5px;
+  text-transform:uppercase; color:#25D366; margin-bottom:20px;
+  display:flex; align-items:center; gap:8px;
+}
+
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+.field { margin-bottom:16px; }
+.field:last-child { margin-bottom:0; }
+label { display:block; font-size:11px; color:#888; margin-bottom:6px; font-weight:700; letter-spacing:0.8px; text-transform:uppercase; }
+input, select, textarea {
+  width:100%; background:#131320; border:1px solid #252538;
+  border-radius:8px; padding:11px 14px; color:#E8E8F0; font-size:14px;
+  transition:border 0.2s, box-shadow 0.2s; font-family:inherit;
+}
+select { cursor:pointer; }
+textarea { resize:vertical; min-height:70px; line-height:1.6; }
+input::placeholder, textarea::placeholder { color:#3A3A55; }
+
+.tone-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+.tone-option {
+  border:1px solid #252538; border-radius:8px; padding:12px;
+  text-align:center; cursor:pointer; transition:all 0.2s; background:#131320;
+}
+.tone-option.selected { border-color:#25D366; background:#0E1A12; }
+.tone-emoji { font-size:20px; margin-bottom:4px; }
+.tone-label { font-size:12px; color:#999; font-weight:600; }
+.tone-option.selected .tone-label { color:#3DBE6C; }
+
+.error-box {
+  background:#1A0808; border:1px solid #C01818; border-radius:8px;
+  padding:12px 16px; color:#FF8080; font-size:13px; margin-bottom:16px;
+  display:none;
+}
+
+.gen-btn {
+  width:100%; padding:17px; background:linear-gradient(135deg,#25D366,#1AA34D);
+  border:none; border-radius:12px; color:#063318; font-size:16px;
+  font-weight:800; cursor:pointer; letter-spacing:0.5px;
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  transition:all 0.2s; box-shadow:0 4px 20px rgba(37,211,102,0.25);
+}
+.gen-btn:hover { background:linear-gradient(135deg,#2EE070,#20B856); transform:translateY(-1px); }
+.gen-btn:active { transform:translateY(0); }
+.gen-btn:disabled { background:#1A5530; color:#5A8A6A; cursor:not-allowed; transform:none; box-shadow:none; }
+.spinner {
+  width:20px; height:20px; border:3px solid rgba(6,51,24,0.3);
+  border-top:3px solid #063318; border-radius:50%;
+  animation:spin 0.7s linear infinite;
+}
+
+.output { animation:fadeIn 0.4s ease; margin-top:30px; display:none; }
+.out-title {
+  font-size:12px; font-weight:700; letter-spacing:2px;
+  text-transform:uppercase; color:#25D366; margin-bottom:16px;
+  display:flex; align-items:center; gap:8px;
+}
+
+.wa-mockup {
+  background:#0B141A; border:1px solid #1E1E2E; border-radius:14px;
+  padding:0; overflow:hidden;
+}
+.wa-header {
+  background:#1F2C34; padding:14px 18px; display:flex; align-items:center; gap:10px;
+}
+.wa-avatar { width:36px; height:36px; border-radius:50%; background:#25D366; display:flex; align-items:center; justify-content:center; font-weight:800; color:#063318; }
+.wa-name { font-size:14px; font-weight:600; color:#E8E8E8; }
+.wa-status { font-size:11px; color:#8A9A9A; }
+.wa-body {
+  background:#0B141A; padding:20px; min-height:200px;
+  background-image: radial-gradient(circle at 20% 50%, rgba(37,211,102,0.03) 0%, transparent 50%);
+}
+.wa-bubble {
+  background:#1F2C34; border-radius:10px; padding:14px 16px;
+  max-width:85%; margin-bottom:14px; position:relative;
+  font-size:14px; line-height:1.6; color:#E8E8E8; white-space:pre-wrap;
+}
+.wa-bubble::after {
+  content:''; position:absolute; left:-6px; top:12px;
+  width:0; height:0; border:6px solid transparent; border-right-color:#1F2C34;
+}
+.wa-time { font-size:10px; color:#8A9A9A; text-align:right; margin-top:6px; }
+
+.btn-row { display:flex; gap:10px; margin-top:18px; flex-wrap:wrap; }
+.copy-btn {
+  padding:10px 22px; background:#131320; border:1px solid #252538;
+  border-radius:8px; color:#888; cursor:pointer; font-size:13px;
+  font-weight:700; transition:all 0.2s; font-family:inherit;
+  display:flex; align-items:center; gap:6px;
+}
+.copy-btn:hover { border-color:#25D366; color:#E8E8F0; }
+.copy-btn.copied { border-color:#0C8050; color:#00C880; background:#0A2A1A; }
+.regen-btn {
+  padding:10px 22px; background:#0A0A18; border:1px solid #1E1E2E;
+  border-radius:8px; color:#666; cursor:pointer; font-size:13px;
+  font-family:inherit; transition:all 0.2s;
+}
+.regen-btn:hover { border-color:#252538; color:#AAA; }
+.new-btn {
+  padding:10px 22px; background:transparent; border:1px solid #1E1E2E;
+  border-radius:8px; color:#555; cursor:pointer; font-size:13px;
+  font-family:inherit; transition:all 0.2s;
+}
+.new-btn:hover { color:#888; }
+
+.brand-strip {
+  margin-top:18px; padding:12px 16px; background:#0C0C0C;
+  border-radius:8px; border:1px solid #1A1A1A;
+  display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;
+}
+.brand-strip-text { font-size:11px; color:#444; }
+.brand-strip-text span { color:#25D366; font-weight:700; }
+
+.footer {
+  padding:20px; border-top:1px solid #1A1A28;
+  text-align:center; font-size:11px; color:#444; margin-top:30px;
+}
+
+@media (max-width: 600px) {
+  .grid2 { grid-template-columns:1fr; }
+  .tone-grid { grid-template-columns:1fr; }
+  .header { padding:14px 16px; }
+  .main { padding:18px 12px 60px; }
+  .card { padding:18px; }
+  .api-banner { padding:12px 16px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo-wrap">
+    <div class="logo-box">M</div>
+    <div>
+      <div class="brand">Makandaar.com</div>
+      <div class="subbrand">WhatsApp Lead Qualifier</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    Muhammad Zeeshan<br>
+    <strong style="color:#25D366">03003687473</strong>
+  </div>
+</div>
+
+<div class="tool-badge">
+  <div class="tool-badge-text">🛠️ Tool 3 of 5 — Free AI Real Estate Toolkit by <strong>Makandaar.com</strong></div>
+</div>
+
+<!-- API KEY BANNER (separate / independent for this tool) -->
+<div class="api-banner" id="apiBanner">
+  <div class="api-label">🔑 FREE Groq API Key</div>
+  <div class="api-input-wrap">
+    <input type="password" class="api-input" id="apiKeyInput"
+      placeholder="Paste your FREE Groq API key here — gsk_..."
+      oninput="onApiInput()">
+    <button class="api-save-btn" id="apiSaveBtn" onclick="saveApiKey()">Save Key</button>
+  </div>
+  <div class="api-status" id="apiStatus">✅ Key saved!</div>
+  <div class="api-link">
+    Get free key → <a href="https://console.groq.com/keys" target="_blank">console.groq.com/keys</a>
+  </div>
+</div>
+
+<div class="main">
+
+  <div class="card">
+    <div class="card-title">💬 Build Your Qualifying Script</div>
+
+    <div class="grid2">
+      <div>
+        <label>Property Type</label>
+        <select id="propType">
+          <option>Apartment</option><option>House</option><option>Villa</option>
+          <option>Plot</option><option>Commercial</option><option>Office</option>
+          <option>Shop</option><option>Penthouse</option><option>Off-Plan Project</option>
+        </select>
+      </div>
+      <div>
+        <label>Budget Range (PKR)</label>
+        <input id="budgetRange" placeholder="e.g. 80 Lac - 1.2 Cr">
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div>
+        <label>Location / Area</label>
+        <input id="location" placeholder="e.g. Bahria Town, DHA, Clifton">
+      </div>
+      <div>
+        <label>Lead Source</label>
+        <select id="leadSource">
+          <option>Facebook / Instagram Ad</option>
+          <option>WhatsApp Inquiry</option>
+          <option>Referral</option>
+          <option>Walk-in / Site Visit</option>
+          <option>Property Portal (Zameen, etc.)</option>
+          <option>Cold Lead (Old Database)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Tone of Voice</label>
+      <div class="tone-grid">
+        <div class="tone-option selected" data-tone="professional" onclick="selectTone('professional')">
+          <div class="tone-emoji">💼</div>
+          <div class="tone-label">Professional</div>
+        </div>
+        <div class="tone-option" data-tone="friendly" onclick="selectTone('friendly')">
+          <div class="tone-emoji">😊</div>
+          <div class="tone-label">Friendly</div>
+        </div>
+        <div class="tone-option" data-tone="urgent" onclick="selectTone('urgent')">
+          <div class="tone-emoji">⚡</div>
+          <div class="tone-label">Urgent</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Anything specific to mention? (optional)</label>
+      <textarea id="extraNotes" placeholder="e.g. Mention limited units, payment plan options, or that you specialize in overseas Pakistani buyers..."></textarea>
+    </div>
+  </div>
+
+  <div class="error-box" id="errorBox"></div>
+
+  <button class="gen-btn" id="genBtn" onclick="generate()">
+    <span style="font-size:18px">⚡</span>
+    Generate WhatsApp Script
+  </button>
+
+  <div class="output" id="output">
+    <div class="out-title">✅ Your Qualifying Script Is Ready</div>
+
+    <div class="wa-mockup">
+      <div class="wa-header">
+        <div class="wa-avatar">B</div>
+        <div>
+          <div class="wa-name">Buyer Lead</div>
+          <div class="wa-status">online</div>
+        </div>
+      </div>
+      <div class="wa-body">
+        <div class="wa-bubble" id="scriptText"></div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="copy-btn" id="copyBtn" onclick="copyScript()">📋 Copy Script</button>
+      <button class="regen-btn" onclick="generate()">🔄 Regenerate</button>
+      <button class="new-btn" onclick="resetAll()">＋ New Script</button>
+    </div>
+
+    <div class="brand-strip">
+      <div class="brand-strip-text">
+        Generated by <span>Makandaar.com</span> · 03003687473
+      </div>
+      <div style="font-size:10px;color:#333">Powered by Groq + Llama 3.3</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  Muhammad Zeeshan &nbsp;·&nbsp; 03003687473 &nbsp;·&nbsp;
+  <a href="http://www.makandaar.com" target="_blank">www.makandaar.com</a><br>
+  <span style="color:#333">Free WhatsApp Lead Qualifier · Tool 3 of 5 · Built for Pakistan Real Estate</span>
+</div>
+
+<script>
+const BRAND = { name:'Muhammad Zeeshan', phone:'03003687473', website:'www.makandaar.com' };
+let selectedTone = 'professional';
+let lastScript = '';
+
+function selectTone(tone) {
+  selectedTone = tone;
+  document.querySelectorAll('.tone-option').forEach(el => {
+    el.classList.toggle('selected', el.dataset.tone === tone);
+  });
+}
+
+// ── API KEY (independent storage key for this tool) ──────────────
+function onApiInput() {}
+
+function saveApiKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if (!key || !key.startsWith('gsk_')) {
+    showError('Please enter a valid Groq API key starting with gsk_...');
+    return;
+  }
+  localStorage.setItem('mak_tool3_api_key', key);
+  updateKeyUI(key);
+  showError('');
+}
+
+function updateKeyUI(key) {
+  const input  = document.getElementById('apiKeyInput');
+  const btn    = document.getElementById('apiSaveBtn');
+  const status = document.getElementById('apiStatus');
+  const banner = document.getElementById('apiBanner');
+  if (key) {
+    input.value = key.slice(0,8) + '••••••••••••••••' + key.slice(-4);
+    input.classList.add('saved-style');
+    btn.textContent = 'Change';
+    btn.classList.add('saved-btn');
+    btn.onclick = clearApiKey;
+    status.style.display = 'block';
+    banner.classList.add('saved');
+  }
+}
+
+function clearApiKey() {
+  localStorage.removeItem('mak_tool3_api_key');
+  const input  = document.getElementById('apiKeyInput');
+  const btn    = document.getElementById('apiSaveBtn');
+  const status = document.getElementById('apiStatus');
+  const banner = document.getElementById('apiBanner');
+  input.value = '';
+  input.classList.remove('saved-style');
+  btn.textContent = 'Save Key';
+  btn.classList.remove('saved-btn');
+  btn.onclick = saveApiKey;
+  status.style.display = 'none';
+  banner.classList.remove('saved');
+}
+
+function getApiKey() { return localStorage.getItem('mak_tool3_api_key') || ''; }
+
+function showError(msg) {
+  const box = document.getElementById('errorBox');
+  box.style.display = msg ? 'block' : 'none';
+  box.innerHTML = msg ? '⚠️ ' + msg : '';
+}
+
+function resetCopyBtn() {
+  const btn = document.getElementById('copyBtn');
+  btn.textContent = '📋 Copy Script';
+  btn.classList.remove('copied');
+}
+
+function copyScript() {
+  if (!lastScript) return;
+  navigator.clipboard.writeText(lastScript).catch(()=>{
+    const ta=document.createElement('textarea'); ta.value=lastScript;
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+  });
+  const btn = document.getElementById('copyBtn');
+  btn.textContent = '✅ Copied!';
+  btn.classList.add('copied');
+  setTimeout(resetCopyBtn, 2500);
+}
+
+function resetAll() {
+  document.getElementById('budgetRange').value = '';
+  document.getElementById('location').value = '';
+  document.getElementById('extraNotes').value = '';
+  document.getElementById('propType').selectedIndex = 0;
+  document.getElementById('leadSource').selectedIndex = 0;
+  selectTone('professional');
+  document.getElementById('output').style.display = 'none';
+  lastScript = '';
+  showError('');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+async function generate() {
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    showError('Please paste your FREE Groq API key at the top and click Save Key first. Get one free at console.groq.com/keys');
+    document.getElementById('apiKeyInput').focus();
+    return;
+  }
+
+  const propType    = document.getElementById('propType').value;
+  const budgetRange  = document.getElementById('budgetRange').value.trim();
+  const location     = document.getElementById('location').value.trim();
+  const leadSource   = document.getElementById('leadSource').value;
+  const extraNotes   = document.getElementById('extraNotes').value.trim();
+
+  if (!budgetRange || !location) {
+    showError('Please fill in Budget Range and Location at minimum.');
+    return;
+  }
+  showError('');
+
+  const btn = document.getElementById('genBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Generating script...';
+  document.getElementById('output').style.display = 'none';
+
+  const toneDescriptions = {
+    professional: 'Professional and polished — like a top real estate consultant',
+    friendly:     'Warm, friendly and conversational — like talking to a helpful friend',
+    urgent:       'Energetic with gentle urgency — creates excitement without being pushy',
+  };
+
+  const systemPrompt = `You are an expert real estate sales trainer in Pakistan.
+You write WhatsApp lead-qualifying message scripts that agents send to new leads.
+The goal: quickly identify if a lead is SERIOUS (ready to buy/invest) or just browsing — using 3-4 short smart questions.
+Rules:
+- Open with a warm greeting referencing how they found the agent (lead source)
+- Ask 3-4 qualifying questions in a numbered or bulleted format
+- Questions should cover: purpose (investment/living), budget confirmation, timeline, and one more relevant detail
+- Keep it SHORT — this is WhatsApp, not email. Max 100 words.
+- Use natural Pakistani real estate WhatsApp style with emojis sparingly
+- End with the exact branding provided
+- Tone: ${toneDescriptions[selectedTone]}`;
+
+  const userPrompt = `Create a WhatsApp lead-qualifying message script for this scenario:
+
+Property Type: ${propType}
+Budget Range: PKR ${budgetRange}
+Location/Area: ${location}
+Lead Source: ${leadSource}
+Extra Notes: ${extraNotes || 'None'}
+Tone: ${selectedTone}
+
+Write ONE ready-to-send WhatsApp message that:
+1. Greets the lead naturally based on how they found us (${leadSource})
+2. Asks 3-4 short qualifying questions (purpose, budget confirm, timeline, +1 relevant)
+3. Feels natural, not robotic
+
+End the message with exactly:
+
+📞 ${BRAND.phone}
+🌐 ${BRAND.website}
+— ${BRAND.name}
+
+Return ONLY the WhatsApp message text. No explanations, no labels, no extra text.`;
+
+  try {
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'Authorization': 'Bearer ' + apiKey,
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        max_tokens: 500,
+        temperature: 0.85,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user',   content: userPrompt   }
+        ],
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(()=>({}));
+      if (res.status === 401) throw new Error('Invalid API key. Please check and re-enter your key.');
+      if (res.status === 429) throw new Error('Free tier rate limit reached. Please wait a minute and try again.');
+      throw new Error(err?.error?.message || `API error ${res.status}`);
+    }
+
+    const json = await res.json();
+    const text = json.choices?.[0]?.message?.content || '';
+    if (!text) throw new Error('Empty response from AI. Please try again.');
+
+    lastScript = text.trim();
+    document.getElementById('scriptText').textContent = lastScript;
+    document.getElementById('output').style.display = 'block';
+    resetCopyBtn();
+
+    setTimeout(()=>{
+      document.getElementById('output').scrollIntoView({behavior:'smooth',block:'start'});
+    }, 100);
+
+  } catch(e) {
+    showError(e.message || 'Something went wrong. Please try again.');
+    console.error(e);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span style="font-size:18px">⚡</span> Generate WhatsApp Script';
+  }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = getApiKey();
+  if (saved) updateKeyUI(saved);
+});
+</script>
+</body>
+</html>
